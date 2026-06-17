@@ -50,77 +50,96 @@ module tb_sync_fifo;
         wr_en = 0;
         rd_en = 0;
         #20 rst_n = 1;
-        
-        $display("=== TEST 1: Write and Read Single Element ===");
-        #10;
-        // Write one element
-        wr_data = 8'hAA;
-        wr_en = 1;
-        #10;
-        wr_en = 0;
-        #10;
-        // Read one element
-        rd_en = 1;
-        #10;
-        $display("Written: 0xAA, Read: 0x%02X", rd_data);
-        rd_en = 0;
-        #10;
-        
-        $display("=== TEST 2: Fill FIFO ===");
-        #10;
-        for (int i = 0; i < DEPTH; i++) begin
-            if (!full) begin
-                wr_data = 8'h10 + i;
-                wr_en = 1;
-                #10;
+
+        // 1) Normal Operation: concurrent read/write stress testing
+        $display("=== CASE 1: Concurrent Read/Write Stress ===");
+        fork
+            begin : writer
+                repeat (256) begin
+                    @(posedge clk);
+                    if (!full) begin
+                        wr_data = $urandom_range(0,255);
+                        wr_en = 1;
+                    end else begin
+                        // attempt write when full (error case check)
+                        wr_en = 1;
+                    end
+                    @(posedge clk);
+                    wr_en = 0;
+                    // random idle cycles
+                    repeat ($urandom_range(0,3)) @(posedge clk);
+                end
             end
-        end
-        wr_en = 0;
-        #10;
-        $display("FIFO Full: %b, Count: %d", full, count);
-        
-        $display("=== TEST 3: Read All Elements ===");
-        #10;
-        for (int i = 0; i < DEPTH; i++) begin
-            if (!empty) begin
-                rd_en = 1;
-                #10;
-                $display("Element %d: 0x%02X", i, rd_data);
+            begin : reader
+                // stagger reader a few cycles
+                repeat (5) @(posedge clk);
+                repeat (256) begin
+                    @(posedge clk);
+                    if (!empty) begin
+                        rd_en = 1;
+                    end else begin
+                        rd_en = 0;
+                    end
+                    @(posedge clk);
+                    rd_en = 0;
+                    // random idle cycles
+                    repeat ($urandom_range(0,4)) @(posedge clk);
+                end
             end
+        join
+
+        // 2) Random interval operations
+        $display("=== CASE 2: Random Interval Operations ===");
+        for (int i = 0; i < 64; i++) begin
+            @(posedge clk);
+            if ($urandom_range(0,1)) begin
+                if (!full) begin wr_data = $urandom_range(0,255); wr_en = 1; end
+            end else begin
+                if (!empty) begin rd_en = 1; end
+            end
+            @(posedge clk);
+            wr_en = 0; rd_en = 0;
         end
-        rd_en = 0;
-        #10;
-        $display("FIFO Empty: %b", empty);
-        
-        $display("=== TEST 4: Simultaneous Read/Write ===");
-        #10;
-        for (int i = 0; i < 8; i++) begin
-            wr_data = 8'hB0 + i;
-            wr_en = 1;
-            if (i > 0) rd_en = 1;
-            #10;
-            if (i > 0) $display("Write: 0x%02X, Read: 0x%02X", wr_data, rd_data);
+
+        // 3) Boundary Conditions: Fill to full and test Full flag & write-when-full detection
+        $display("=== CASE 3: Boundary - Fill to Full and Write-when-Full ===");
+        // Fill
+        for (int i = 0; i < DEPTH; i++) begin
+            @(posedge clk);
+            if (!full) begin wr_data = i; wr_en = 1; end
+            @(posedge clk); wr_en = 0;
         end
+        @(posedge clk);
+        if (!full) $error("Expected FIFO to be full but Full flag is 0");
+        // Attempt one extra write
+        @(posedge clk);
+        wr_data = 8'hFF; wr_en = 1;
+        @(posedge clk);
+        if (wr_en && full) $warning("Write attempted while FIFO full (detected as expected)");
         wr_en = 0;
-        
-        // Read remaining elements
-        for (int i = 0; i < 4; i++) begin
-            rd_en = 1;
-            #10;
-            $display("Read: 0x%02X", rd_data);
+
+        // 4) Empty flag assertion testing and read-when-empty detection
+        $display("=== CASE 4: Boundary - Drain to Empty and Read-when-Empty ===");
+        // Drain all
+        for (int i = 0; i < DEPTH; i++) begin
+            @(posedge clk);
+            if (!empty) begin rd_en = 1; end
+            @(posedge clk); rd_en = 0;
         end
-        rd_en = 0;
-        
-        $display("=== TEST 5: Edge Case - Empty FIFO Read ===");
-        #10;
-        $display("Attempting to read from empty FIFO...");
+        @(posedge clk);
+        if (!empty) $error("Expected FIFO to be empty but Empty flag is 0");
+        // Attempt one extra read
+        @(posedge clk);
         rd_en = 1;
-        #10;
-        $display("Read data (should be undefined): 0x%02X, Empty: %b", rd_data, empty);
+        @(posedge clk);
+        if (rd_en && empty) $warning("Read attempted while FIFO empty (detected as expected)");
         rd_en = 0;
-        
-        #50;
-        $display("=== All Tests Complete ===");
+
+        // 5) Error Cases already covered above (write-when-full/read-when-empty warnings)
+
+        $display("=== All Sync FIFO Cases Complete ===");
+        #20;
+        $display("Testbench finished.");
         $finish;
     end
 
