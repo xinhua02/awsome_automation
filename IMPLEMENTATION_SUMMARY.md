@@ -9,6 +9,7 @@ This repository contains complete synchronous and asynchronous FIFO implementati
 - Implementation: complete
 - Regression: passing (sync + async)
 - Primary regression entrypoint: `sim/regression_runner.ps1`
+- Recommended sign-off gate: DUT-only coverage threshold (`-DutCoverageThreshold 100`)
 
 ## Deliverables
 
@@ -111,6 +112,7 @@ From `sim/`:
 
 ```powershell
 ./regression_runner.ps1
+./regression_runner.ps1 -DutCoverageThreshold 100
 ```
 
 Manual runs:
@@ -130,7 +132,8 @@ vsim -c tb_async_fifo -do "run -all; exit"
 ## Notes
 
 - Protocol-violation warnings are intentionally exercised by tests.
-- For sign-off workflows, add coverage tracking and CI gating on regression results.
+- Coverage artifacts are generated under `sim/coverage/` for each regression run with coverage enabled.
+- Current sign-off recommendation is DUT-only gating (`-DutCoverageThreshold 100`) to avoid TB-only metric noise.
 
 ---
 
