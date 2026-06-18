@@ -27,11 +27,30 @@ function Run-Sim {
 
     # Run simulation (command-line). Capture output in logfile.
     & vsim -c $tb -do "run -all; exit" 2>&1 | Tee-Object -FilePath $logfile -Append | Out-Null
-
     # Inspect logfile for Errors: N pattern
     $content = Get-Content -Raw -Path $logfile
     $errs = 0
     if ($content -match 'Errors:\s*(\d+)') { $errs = [int]$matches[1] }
+
+    # Compare testbench-generated report with baseline expected results
+    $reportFile = "${name}_tb_report.txt"
+    $baselineFile = "${name}_results_full.txt"
+    if (Test-Path -Path $reportFile) {
+        $report = Get-Content -Raw -Path $reportFile
+        if (-not (Test-Path -Path $baselineFile)) {
+            # If baseline missing, create it from this run to establish expected output
+            Set-Content -Path $baselineFile -Value $report
+            Write-Host "Baseline created: $baselineFile"
+        } else {
+            $baseline = Get-Content -Raw -Path $baselineFile
+            if ($report -ne $baseline) {
+                Write-Host "$($name): OUTPUT MISMATCH between $reportFile and $baselineFile"
+                $errs += 1
+            }
+        }
+    } else {
+        Write-Host "Warning: no report file generated ($reportFile) for $name"
+    }
 
     if ($errs -eq 0) {
         Write-Host "$($name): PASS (Errors: 0)"

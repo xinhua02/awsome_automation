@@ -9,6 +9,8 @@ module tb_async_fifo;
     
     logic wr_clk, wr_rst_n;
     logic rd_clk, rd_rst_n;
+    int error_count = 0;
+    int warn_count = 0;
     
     // Write interface
     logic [WIDTH-1:0] wr_data;
@@ -93,7 +95,10 @@ module tb_async_fifo;
                     end else rd_en = 0;
                     @(posedge rd_clk);
                     if (rd_en) begin
-                        if (rd_data !== expected_val) $error("async_fifo: Data mismatch at %0t - expected %0h got %0h", $time, expected_val, rd_data);
+                        if (rd_data !== expected_val) begin
+                            error_count += 1;
+                            $error("async_fifo: Data mismatch at %0t - expected %0h got %0h", $time, expected_val, rd_data);
+                        end
                     end
                     rd_en = 0;
                     repeat ($urandom_range(0,3)) @(posedge rd_clk);
@@ -124,10 +129,12 @@ module tb_async_fifo;
             @(posedge wr_clk); wr_en = 0;
         end
         @(posedge wr_clk);
-        if (!full) $error("Expected FIFO to be full but Full flag is 0 (async)");
+        if (!full) begin error_count += 1; $error("Expected FIFO to be full but Full flag is 0 (async)"); end
         // Attempt extra write across clock boundary to exercise CDC
         @(posedge wr_clk); wr_data = 8'hEE; wr_en = 1; #1; // small delay near edge
-        @(posedge wr_clk); if (wr_en && full) $warning("Async: write attempted while FIFO full (expected)"); wr_en = 0;
+        @(posedge wr_clk);
+        if (wr_en && full) begin warn_count += 1; $warning("Async: write attempted while FIFO full (expected)"); end
+        wr_en = 0;
 
         // 4) Empty flag assertion testing and read-when-empty detection
         $display("=== CASE 4: Boundary - Drain to Empty and Read-when-Empty ===");
@@ -137,10 +144,12 @@ module tb_async_fifo;
             @(posedge rd_clk); rd_en = 0;
         end
         @(posedge rd_clk);
-        if (!empty) $error("Expected FIFO to be empty but Empty flag is 0 (async)");
+        if (!empty) begin error_count += 1; $error("Expected FIFO to be empty but Empty flag is 0 (async)"); end
         // Attempt extra read
         @(posedge rd_clk); rd_en = 1; #1; // near-edge event
-        @(posedge rd_clk); if (rd_en && empty) $warning("Async: read attempted while FIFO empty (expected)"); rd_en = 0;
+        @(posedge rd_clk);
+        if (rd_en && empty) begin warn_count += 1; $warning("Async: read attempted while FIFO empty (expected)"); end
+        rd_en = 0;
 
         // 5) Metastability injection: create near-synchronous toggles and asynchronous resets
         $display("=== CASE 5: Metastability Injection ===");
@@ -163,6 +172,16 @@ module tb_async_fifo;
         // 6 & 7) Error Cases: write-when-full and read-when-empty are monitored by warnings
         $display("=== All Async FIFO Cases Complete ===");
         #100;
+        // Write compact report for post-sim comparison
+        integer fh;
+        fh = $fopen("c:/Users/xinhua02/awsome_automation/awsome_automation/sim/async_tb_report.txt", "w");
+        if (fh == 0) begin
+            $display("async_fifo: FOPEN FAILED for async_tb_report.txt (fh=%0d)", fh);
+        end else begin
+            $fdisplay(fh, "errors=%0d warnings=%0d", error_count, warn_count);
+            $fclose(fh);
+            $display("Async testbench finished. Report written to sim/async_tb_report.txt (fh=%0d)", fh);
+        end
         $finish;
     end
 
@@ -170,18 +189,14 @@ module tb_async_fifo;
     initial begin
         forever begin
             @(posedge wr_clk);
-            if (wr_en && full) begin
-                $warning("Write attempted while FIFO is full!");
-            end
+            if (wr_en && full) begin warn_count += 1; $warning("Write attempted while FIFO is full!"); end
         end
     end
 
     initial begin
         forever begin
             @(posedge rd_clk);
-            if (rd_en && empty) begin
-                $warning("Read attempted while FIFO is empty!");
-            end
+            if (rd_en && empty) begin warn_count += 1; $warning("Read attempted while FIFO is empty!"); end
         end
     end
 

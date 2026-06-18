@@ -1,56 +1,48 @@
-# Copilot instructions for awsome_automation
+# AGENTS.md — Agent guidance for awsome_automation
 
 Purpose
-- Provide succinct, repository-specific guidance for FIFO queue design verification in Verilog/SystemVerilog.
+- Short, actionable instructions for AI coding agents working on this repo.
 
-What was found
-- **Project Type**: Hardware verification (Synchronous & Asynchronous FIFO designs)
-- **Language**: Verilog (SystemVerilog for testbenches)
-- **Structure**: 
-  - `src/` — Verilog modules (sync_fifo.sv, async_fifo.sv)
-  - `sim/` — Simulation testbenches and environment
-  - `doc/` — Documentation and design notes
+Where to look first
+- [src/](src/) — FIFO implementations (`sync_fifo.sv`, `async_fifo.sv`)
+- [sim/](sim/) — Testbenches and simulation scripts
+- [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md) — Design overview
+- [TEST_VERIFICATION_REPORT.md](TEST_VERIFICATION_REPORT.md) — Test outcomes and coverage
+- [doc/](doc/) — Design notes and coding conventions
 
-Build, test, and lint commands
-- Simulation: `vlib work && vmap work ./work && vlog src/*.sv sim/*.sv && vsim -c -do "run; quit" <testbench_module>`
+Build & test (most useful commands)
+- Simulation (full):
+  - `vlib work && vmap work ./work && vlog src/*.sv sim/*.sv && vsim -c -do "run; quit" <testbench_module>`
 - Compile only: `vlog src/*.sv sim/*.sv`
-- Interactive simulation: `vsim <testbench_module>` (opens GUI)
-- Waveform viewing: `vsim -view results.wdb` or use ModelSim waveform viewer
-- Single test: `vsim -c -do "run; quit" <testbench_module_name>`
+- Interactive simulation: `vsim <testbench_module>`
+- Waveform viewing: `vsim -view results.wdb`
+- Single test (non-GUI): `vsim -c -do "run; quit" <testbench_module_name>`
 
-High-level architecture (current)
-- **Synchronous FIFO** (`src/sync_fifo.v`): Single clock domain, binary pointers, full/empty flags
-- **Asynchronous FIFO** (`src/async_fifo.v`): Dual clock domains, Gray code CDC, metastability safe
-- **Test Environment** (`sim/`): Testbenches with concurrent read/write, stimulus generation
-- Key design pattern: Gray code for pointer synchronization across clock domains
+High-level architecture
+- Synchronous FIFO: single clock domain, binary pointers, full/empty logic
+- Asynchronous FIFO: dual clock domains, Gray-code pointers, CDC synchronization
+- Test environment: `sim/` contains testbenches, scripts, and helper assertions
 
-Where Copilot should look first
-- `src/` — FIFO module implementations
-- `sim/` — Testbenches, coverage models, verification environment
-- `IMPLEMENTATION_SUMMARY.md` — High-level design overview
-- `TEST_VERIFICATION_REPORT.md` — Test results and coverage
+Key repo conventions
+- Prefer Gray code for cross-clock pointer synchronization
+- Full/empty flag logic based on write/read pointer comparisons
+- Tests and scripts assume Windows-friendly shell commands (PowerShell / batch)
 
-Key conventions and heuristics for this repository
-- FIFO designs follow standard CDC (Clock Domain Crossing) best practices
-- Gray code is used for safe pointer synchronization across domains
-- Full flag: MSB of write pointer differs, lower bits match with read pointer
-- Empty flag: All bits of write pointer match read pointer
-- Windows environment is current; scripts should be shell-compatible
+Link, don’t embed
+- Do not copy long documentation into this file. Link to the authoritative sources in `doc/`, `IMPLEMENTATION_SUMMARY.md`, and `TEST_VERIFICATION_REPORT.md`.
 
-Integration with existing docs / assistant configs
-- README.md exists but has no actionable content to incorporate.
-- No detected assistant config files (CLAUDE.md, .cursorrules, AGENTS.md, .windsurfrules, CONVENTIONS.md, etc.). If such files are added later, include their important rules here.
+When to update this file
+- Add exact CI or regression commands when CI is added
+- Add language-specific build steps if non-Verilog components are introduced
 
-How to update this file
-- When adding tests, CI, or build tooling, add the exact commands under "Build, test, and lint commands" (single-test examples too).
-- If the repo adopts language-specific layouts (Python package, Node package, Terraform), add a short "High-level architecture (expanded)" section describing the layout and entrypoints.
+Quick session checklist
+1. Run the single-test command for the testbench you're working on
+2. Inspect `sim/` testbenches for stimulus patterns
+3. Consult `doc/VerilogCodingStyle.md` for style rules
+4. If adding tests, update `TEST_VERIFICATION_REPORT.md` with expected pass criteria
 
-Quick Copilot session checklist
-1. Search for manifests and entrypoints (see "Where Copilot should look first").
-2. If none found, ask the user what language/runtime they intend to use (do not scaffold without confirmation).
-3. If scaffolding is requested, create minimal files and include tests/examples.
+Next suggested agent customizations
+- `skill:modelsim-runner` — wrapper to run common ModelSim workflows and parse results
+- `hook:verify-on-commit` — lightweight CI hook to run fast smoke tests
 
-Notes for maintainers
-- Keep this file up to date when adding build/test/lint scripts or changing the project structure.
-
-(Generated on 2026-06-16)
+(Generated 2026-06-18)

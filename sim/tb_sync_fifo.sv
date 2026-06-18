@@ -9,6 +9,8 @@ module tb_sync_fifo;
     
     logic clk;
     logic rst_n;
+    int error_count = 0;
+    int warn_count = 0;
     
     // Write interface
     logic [WIDTH-1:0] wr_data;
@@ -87,7 +89,10 @@ module tb_sync_fifo;
                     end
                     @(posedge clk);
                     if (rd_en) begin
-                        if (rd_data !== expected_val) $error("sync_fifo: Data mismatch at %0t - expected %0h got %0h", $time, expected_val, rd_data);
+                        if (rd_data !== expected_val) begin
+                            error_count += 1;
+                            $error("sync_fifo: Data mismatch at %0t - expected %0h got %0h", $time, expected_val, rd_data);
+                        end
                     end
                     rd_en = 0;
                     // random idle cycles
@@ -118,12 +123,12 @@ module tb_sync_fifo;
             @(posedge clk); wr_en = 0;
         end
         @(posedge clk);
-        if (!full) $error("Expected FIFO to be full but Full flag is 0");
+        if (!full) begin error_count += 1; $error("Expected FIFO to be full but Full flag is 0"); end
         // Attempt one extra write
         @(posedge clk);
         wr_data = 8'hFF; wr_en = 1;
         @(posedge clk);
-        if (wr_en && full) $warning("Write attempted while FIFO full (detected as expected)");
+        if (wr_en && full) begin warn_count += 1; $warning("Write attempted while FIFO full (detected as expected)"); end
         wr_en = 0;
 
         // 4) Empty flag assertion testing and read-when-empty detection
@@ -135,19 +140,28 @@ module tb_sync_fifo;
             @(posedge clk); rd_en = 0;
         end
         @(posedge clk);
-        if (!empty) $error("Expected FIFO to be empty but Empty flag is 0");
+        if (!empty) begin error_count += 1; $error("Expected FIFO to be empty but Empty flag is 0"); end
         // Attempt one extra read
         @(posedge clk);
         rd_en = 1;
         @(posedge clk);
-        if (rd_en && empty) $warning("Read attempted while FIFO empty (detected as expected)");
+        if (rd_en && empty) begin warn_count += 1; $warning("Read attempted while FIFO empty (detected as expected)"); end
         rd_en = 0;
 
         // 5) Error Cases already covered above (write-when-full/read-when-empty warnings)
 
         $display("=== All Sync FIFO Cases Complete ===");
         #20;
-        $display("Testbench finished.");
+        // Write compact report for post-sim comparison
+        integer fh;
+        fh = $fopen("c:/Users/xinhua02/awsome_automation/awsome_automation/sim/sync_tb_report.txt", "w");
+        if (fh == 0) begin
+            $display("sync_fifo: FOPEN FAILED for sync_tb_report.txt (fh=%0d)", fh);
+        end else begin
+            $fdisplay(fh, "errors=%0d warnings=%0d", error_count, warn_count);
+            $fclose(fh);
+            $display("Testbench finished. Report written to sim/sync_tb_report.txt (fh=%0d)", fh);
+        end
         $finish;
     end
 
@@ -155,6 +169,7 @@ module tb_sync_fifo;
     initial begin
         forever @(posedge clk) begin
             if (count !== expected_q.size()) begin
+                error_count += 1;
                 $error("sync_fifo: Count mismatch at %0t: count=%0d expected=%0d", $time, count, expected_q.size());
             end
         end

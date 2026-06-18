@@ -1,6 +1,6 @@
 # vsim -c tb_async_fifo -do "run -all; exit" 
-# Start time: 11:49:37 on Jun 18,2026
-# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# Start time: 12:44:54 on Jun 18,2026
+# ** Note: (vsim-8009) Loading existing optimized design _opt1
 # //  Questa Sim-64
 # //  Version 2021.1 win64 Jan 19 2021
 # //
@@ -226,5 +226,5 @@
 # === All Async FIFO Cases Complete ===
 # ** Note: $finish    : tb_async_fifo.sv(154)
 #    Time: 19145 ns  Iteration: 0  Instance: /tb_async_fifo
-# End time: 11:49:43 on Jun 18,2026, Elapsed time: 0:00:06
+# End time: 12:45:00 on Jun 18,2026, Elapsed time: 0:00:06
 # Errors: 0, Warnings: 99
