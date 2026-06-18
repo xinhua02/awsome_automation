@@ -1,164 +1,138 @@
 # FIFO Implementation Summary
 
-## 📋 Overview
-Successfully implemented complete Synchronous and Asynchronous FIFO designs with full verification environment.
+## Overview
 
-## ✅ Deliverables
+This repository contains complete synchronous and asynchronous FIFO implementations in SystemVerilog, together with testbenches, regression scripts, and verification documentation.
 
-### 1. **Synchronous FIFO** (`src/sync_fifo.v`)
-- Single clock domain FIFO
-- Configurable depth (power of 2) and data width
-- Full and empty flag generation
-- Real-time count output
-- Binary pointer-based implementation
+## Current Status
+
+- Implementation: complete
+- Regression: passing (sync + async)
+- Primary regression entrypoint: `sim/run_regression.ps1`
+
+## Deliverables
+
+### 1. Synchronous FIFO (`src/sync_fifo.sv`)
+
+- Single clock domain
+- Parameterized depth and width
+- Full and empty flags
+- Real-time element count output
+- Binary pointer implementation with extra MSB for full/empty disambiguation
+
+Key conditions:
+
 - Empty: `wr_ptr == rd_ptr`
-- Full: MSB differs, lower bits match
+- Full: write/read lower bits equal and MSBs differ
 
-**Features:**
-- Simultaneous read/write support
-- Combinatorial read output (1-cycle latency on write)
-- 2 states representation: empty/full distinction via MSB
+### 2. Asynchronous FIFO (`src/async_fifo.sv`)
 
-### 2. **Asynchronous FIFO** (`src/async_fifo.v`)
-- Dual independent clock domains (write and read)
-- Safe Clock Domain Crossing (CDC) implementation
-- Gray code conversion for pointer synchronization
-- 2-stage flip-flop synchronizers for metastability elimination
-- Per-domain full/empty flags
-- Configurable depth and data width
+- Independent write/read clock domains
+- Gray-coded pointer CDC
+- 2-stage synchronizers (`src/cdc_sync.sv`)
+- Gray conversion helpers (`src/gray_converter.sv`, `src/gray_decoder.sv`)
+- Domain-local full/empty status generation
 
-**Key Components:**
-- Gray code converters (binary ↔ Gray)
-- CDC synchronizer chains (2-stage default)
-- Independent write/read pointer logic
-- Synchronized pointer comparison across domains
+CDC path summary:
 
-**CDC Architecture:**
-```
-Write Clock Domain          Read Clock Domain
-  wr_ptr                      rd_ptr
-     ↓ (Gray convert)           ↓ (Gray convert)
-  wr_ptr_gray              rd_ptr_gray
-     ↓ (CDC Sync)             ↓ (CDC Sync)
-  [2 FFs] ----------→      [2 FFs]
-     ↓ (Gray decode)           ↓ (Gray decode)
-  rd_ptr_sync              wr_ptr_sync
-     ↓                         ↓
-  full_flag              empty_flag
+```text
+Write domain              Read domain
+   wr_ptr                    rd_ptr
+      -> gray                   -> gray
+      -> sync to rd             -> sync to wr
+      -> decode                 -> decode
+      -> full decision          -> empty decision
 ```
 
-### 3. **Test Environment**
+### 3. Verification Environment
 
-#### Synchronous FIFO Tests (`sim/tb_sync_fifo.sv`)
-- ✅ Single element write/read
-- ✅ FIFO fill to capacity
-- ✅ Complete drain operations
-- ✅ Simultaneous read/write
-- ✅ Empty FIFO edge cases
-- ✅ Full FIFO handling
+Synchronous testbench: `sim/tb_sync_fifo.sv`
 
-#### Asynchronous FIFO Tests (`sim/tb_async_fifo.sv`)
-- ✅ Cross-domain communication (100 MHz write, 150 MHz read)
-- ✅ CDC synchronization timing verification
-- ✅ Stress tests with continuous operations
-- ✅ Parallel read/write processes
-- ✅ Protocol violation detection (read from empty, write to full)
-- ✅ Metastability resilience validation
+- Concurrent read/write stress
+- Random interval operations
+- Full/empty boundary tests
+- Protocol-violation warning checks
 
-**Test Coverage:**
-- Clock frequency relationships (1:1 to async)
-- Simultaneous read/write in different domains
-- Edge case handling
-- CDC settling time verification
+Asynchronous testbench: `sim/tb_async_fifo.sv`
 
-### 4. **Documentation**
+- Dual-clock concurrent stress
+- CDC behavior checks
+- Boundary and protocol checks
+- Metastability-oriented reset/timing stress
 
-#### Design Document (`doc/FIFO_DESIGN.md`)
-- Architecture overview
-- Detailed interface specifications
-- Timing characteristics
-- Implementation notes
-- Use case recommendations
-- CDC metastability handling explanation
+### 4. Documentation Set
 
-#### Project README
-- Quick start guide
-- Module parameters and interfaces
-- Performance characteristics
-- Design decisions rationale
-- Recommended configurations
+- `README.md`: quick start, architecture, and commands
+- `TEST_VERIFICATION_REPORT.md`: latest review and verification evidence
+- `doc/FIFO_DESIGN.md`: design-level module behavior and interfaces
 
-## 📊 Design Specifications
+## Design Snapshot
 
 ### Synchronous FIFO
+
 | Aspect | Details |
-|--------|---------|
-| Pointer Width | ADDR_WIDTH + 1 bit |
-| Empty Condition | Exact match of pointers |
-| Full Condition | MSB differs, lower bits match |
-| Throughput | 1 read + 1 write per cycle |
-| Read Latency | 0 cycles (combinatorial) |
-| Write Latency | 1 cycle |
+| ------ | ------- |
+| Pointer width | `$clog2(DEPTH) + 1` |
+| Empty condition | `wr_ptr == rd_ptr` |
+| Full condition | MSB differs, lower bits match |
+| Throughput | Up to 1 read + 1 write per cycle |
+| Read data path | Combinational data output |
 
 ### Asynchronous FIFO
+
 | Aspect | Details |
-|--------|---------|
-| Encoding | Gray code (1 bit change/cycle) |
-| Synchronization Depth | 2-stage flip-flop chain |
-| CDC Latency | ~2-3 destination clocks |
-| Metastability Coverage | Worst-case timing |
-| Independent Clocks | Yes, async operation |
-| Reset Independence | Per-domain reset support |
+| ------ | ------- |
+| Pointer encoding | Gray code across CDC boundaries |
+| Synchronizer depth | 2 stages (default) |
+| Typical CDC latency | ~2-3 destination clocks |
+| Clocking | Independent write/read domains |
 
-## 🔧 Key Implementation Details
+## File Layout (Key Files)
 
-### Gray Code Usage
-- Binary to Gray: `gray = binary ^ (binary >> 1)`
-- Gray to Binary: Iterative XOR from MSB down
-- Advantage: Only 1 bit changes per increment (safe for CDC)
+```text
+src/
+   sync_fifo.sv
+   async_fifo.sv
+   cdc_sync.sv
+   gray_converter.sv
+   gray_decoder.sv
 
-### CDC Synchronizer
-- 2-stage flip-flop synchronizers eliminate metastability
-- Covers setup/hold violations across domains
-- Typical resolution time: 2 destination clock cycles
-
-### FIFO Full/Empty Detection
-- **Sync FIFO**: Pointer comparison in same domain
-- **Async FIFO**: Uses synchronized pointers in each domain
-
-## 📁 File Structure
-```
-project/
-├── src/
-│   ├── sync_fifo.v         (70 lines)
-│   └── async_fifo.v        (150+ lines with CDC)
-├── sim/
-│   ├── tb_sync_fifo.sv     (95 lines)
-│   └── tb_async_fifo.sv    (140+ lines)
-├── doc/
-│   └── FIFO_DESIGN.md      (Technical documentation)
-└── README.md               (Project overview)
+sim/
+   tb_sync_fifo.sv
+   tb_async_fifo.sv
+   run_sync_fifo.do
+   run_async_fifo.do
+   run_regression.ps1
 ```
 
-## 🎯 Next Steps
+## Verified Commands
 
-The simulation phase is pending:
-1. Run testbenches with a Verilog simulator (Vivado, ModelSim, VCS)
-2. Verify protocol compliance
-3. Check timing constraints
-4. Validate CDC synchronization
-5. Generate coverage reports
+From `sim/`:
 
-## ⚡ Performance Characteristics
+```powershell
+./run_regression.ps1
+```
 
-- **Area Overhead**: ~(WIDTH × DEPTH) bits + control logic
-- **Power**: Proportional to switching activity
-- **Speed**: Synchronous limited by clock; Asynchronous by CDC overhead
-- **CDC Delay**: ~3-5 destination clock cycles for stable synchronization
+Manual runs:
+
+```powershell
+vlib work
+vmap work ./work
+vlog -sv +incdir=../src ../src/*.sv fifo_assertions.sv tb_sync_fifo.sv
+vsim -c tb_sync_fifo -do "run -all; exit"
+
+vlib work
+vmap work ./work
+vlog -sv +incdir=../src ../src/*.sv fifo_assertions.sv tb_async_fifo.sv
+vsim -c tb_async_fifo -do "run -all; exit"
+```
+
+## Notes
+
+- Protocol-violation warnings are intentionally exercised by tests.
+- For sign-off workflows, add coverage tracking and CI gating on regression results.
 
 ---
 
-**Commit Hash**: 350055b  
-**Status**: ✅ Implementation Complete  
-**Remaining**: Simulation & validation
-
+Last updated: 2026-06-18
+Status: implementation and regression complete

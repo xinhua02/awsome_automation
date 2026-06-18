@@ -2,164 +2,152 @@
 
 ## Overview
 
-This project implements two FIFO (First-In-First-Out) queue designs in Verilog:
-1. **Synchronous FIFO** - Single clock domain
-2. **Asynchronous FIFO** - Dual clock domain with Clock Domain Crossing (CDC)
+This project includes two FIFO designs:
 
-## Synchronous FIFO (sync_fifo.v)
+1. Synchronous FIFO: single clock domain
+2. Asynchronous FIFO: dual clock domain with CDC support
 
-### Features
+## Synchronous FIFO (`src/sync_fifo.sv`)
+
+### Synchronous Features
+
 - Single clock domain operation
-- Configurable depth (power of 2 recommended) and data width
-- Empty and full flags
-- Real-time FIFO count
-- Simultaneous read/write support
+- Parameterized depth and width
+- `empty` and `full` status flags
+- Real-time `count` output
+- Concurrent read/write support
 
 ### Architecture
-- **Pointers**: Binary read and write pointers with extra MSB for empty/full detection
-- **Memory**: Array-based storage
-- **Control Logic**: 
-  - Empty: `wr_ptr == rd_ptr`
-  - Full: MSBs differ but lower bits match
-  - Count: difference between write and read pointers
 
-### Parameters
+- Pointers: binary read/write pointers with extra MSB for full/empty disambiguation
+- Storage: memory array
+- Control logic:
+  - Empty condition: `wr_ptr == rd_ptr`
+  - Full condition: pointer lower bits equal and MSBs differ
+  - Count: `wr_ptr - rd_ptr`
+
+### Synchronous Parameters
+
 ```verilog
-DEPTH = 16      // Number of storage locations (power of 2 recommended)
-WIDTH = 8       // Data width in bits
+parameter DEPTH = 16;
+parameter WIDTH = 8;
 ```
 
-### Interface Signals
+### Synchronous Interface Signals
+
 | Signal | Dir | Width | Description |
-|--------|-----|-------|-------------|
+| ------ | --- | ----- | ----------- |
 | clk | I | 1 | System clock |
 | rst_n | I | 1 | Active-low reset |
-| wr_data | I | WIDTH | Data to write |
+| wr_data | I | WIDTH | Data input |
 | wr_en | I | 1 | Write enable |
 | full | O | 1 | FIFO full flag |
-| rd_data | O | WIDTH | Data to read |
+| rd_data | O | WIDTH | Data output |
 | rd_en | I | 1 | Read enable |
 | empty | O | 1 | FIFO empty flag |
-| count | O | DEPTH | Current number of items |
+| count | O | `$clog2(DEPTH)+1` | Number of stored entries |
 
 ### Timing
-- Write operation: Data written on rising clock edge when `wr_en=1` and `full=0`
-- Read operation: Data available combinatorially, pointer advanced on rising clock edge when `rd_en=1` and `empty=0`
 
----
+- Write: on rising edge when `wr_en && !full`
+- Read pointer advance: on rising edge when `rd_en && !empty`
+- Read data path: combinational from current read address
 
-## Asynchronous FIFO (async_fifo.v)
+## Asynchronous FIFO (`src/async_fifo.sv`)
 
-### Features
-- Dual independent clock domains (write and read)
-- Safe Clock Domain Crossing (CDC) using Gray code synchronizers
-- Configurable depth and data width
-- Empty and full flags (synchronized to respective clock domains)
-- Handles metastability with 2-stage synchronizer FFs
+### Asynchronous Features
 
-### Architecture
+- Independent write/read clocks
+- Gray-code pointer CDC
+- Configurable depth and width
+- Domain-local full/empty flag generation
+- 2-stage synchronizer-based metastability mitigation
 
-#### Components:
+### Architecture Components
 
-1. **Gray Code Converter**
-   - Converts binary pointers to Gray code
-   - Advantage: Only 1 bit changes per increment, safe for CDC
+1. Gray converter (`gray_converter.sv`): binary pointer to Gray code
+2. Gray decoder (`gray_decoder.sv`): synchronized Gray code back to binary
+3. CDC synchronizer (`cdc_sync.sv`): pointer transfer between domains
+4. Domain logic: local pointer increment and full/empty decisions
 
-2. **Gray Code Decoder**
-   - Converts Gray code back to binary for comparison
-   - Used to compare pointers across domains
+### Asynchronous Parameters
 
-3. **CDC Synchronizer (cdc_sync)**
-   - 2-stage flip-flop chain in destination clock domain
-   - Eliminates metastability after 2 clock cycles
-   - Configurable number of stages (default: 2)
-
-4. **Main FIFO Logic**
-   - Separate read and write pointer logic per clock domain
-   - Gray-coded pointers synchronized across domains
-   - Full/empty flags based on synchronized pointers
-
-### Parameters
 ```verilog
-DEPTH = 16      // Number of storage locations (power of 2)
-WIDTH = 8       // Data width in bits
+parameter DEPTH = 16;
+parameter WIDTH = 8;
 ```
 
-### Clock Domain Separation
+### Domain Separation
 
-**Write Clock Domain:**
-- wr_ptr, wr_ptr_gray: Local pointer and Gray version
-- rd_ptr_gray_sync: Synchronized read pointer (from rd_clk domain)
-- full: Based on synchronized rd_ptr
+Write domain:
 
-**Read Clock Domain:**
-- rd_ptr, rd_ptr_gray: Local pointer and Gray version
-- wr_ptr_gray_sync: Synchronized write pointer (from wr_clk domain)
-- empty: Based on synchronized wr_ptr
+- Local state: `wr_ptr`, `wr_ptr_gray`
+- Remote view: synchronized/decode read pointer
+- Output: `full`
 
-### CDC Metastability Handling
-- Synchronization delay: 2 clock cycles in destination domain
-- Recommended setup: Allow 10+ destination clock cycles before assuming stable CDC status
-- Gray code ensures maximum 1 bit change per clock, preventing multiple bit transitions
+Read domain:
 
-### Interface Signals
+- Local state: `rd_ptr`, `rd_ptr_gray`
+- Remote view: synchronized/decode write pointer
+- Output: `empty`
+
+### CDC Behavior Notes
+
+- Synchronization latency is typically 2-3 destination clocks
+- Gray coding constrains pointer transitions to one bit at a time
+- Flags settle after synchronizer delay
+
+### Asynchronous Interface Signals
 
 | Signal | Domain | Dir | Width | Description |
-|--------|--------|-----|-------|-------------|
+| ------ | ------ | --- | ----- | ----------- |
 | wr_clk | Write | I | 1 | Write clock |
-| wr_rst_n | Write | I | 1 | Write domain reset (active-low) |
-| wr_data | Write | I | WIDTH | Data to write |
+| wr_rst_n | Write | I | 1 | Write reset, active-low |
+| wr_data | Write | I | WIDTH | Write data |
 | wr_en | Write | I | 1 | Write enable |
-| full | Write | O | 1 | FIFO full (write domain) |
+| full | Write | O | 1 | FIFO full flag |
 | rd_clk | Read | I | 1 | Read clock |
-| rd_rst_n | Read | I | 1 | Read domain reset (active-low) |
-| rd_data | Read | O | WIDTH | Data to read |
+| rd_rst_n | Read | I | 1 | Read reset, active-low |
+| rd_data | Read | O | WIDTH | Read data |
 | rd_en | Read | I | 1 | Read enable |
-| empty | Read | O | 1 | FIFO empty (read domain) |
+| empty | Read | O | 1 | FIFO empty flag |
 
 ### Timing Considerations
-- After reset, allow 2-3 read clock cycles before accessing full flag in write domain
-- After reset, allow 2-3 write clock cycles before accessing empty flag in read domain
-- CDC provides stable flags after synchronization delay
-- Data valid immediately after read (combinatorial from memory)
 
----
+- Allow synchronizer settling after reset before relying on cross-domain flags
+- `full` and `empty` are domain-valid and include CDC delay effects
 
-## Implementation Notes
+## Implementation Guidance
 
 ### Synchronous FIFO Use Cases
-- Same clock domain communication
-- High-speed, single-frequency systems
-- Simpler control logic
-- Lower latency (no CDC delay)
+
+- Same-domain buffering
+- Low-overhead control paths
+- Minimal CDC complexity
 
 ### Asynchronous FIFO Use Cases
-- Multi-clock domain communication (e.g., USB, PCIe bridges)
-- Clock domain isolation
-- Power management (different clock domains)
-- Safe metastability handling
 
-### Design Best Practices
-1. Always assert resets at power-up
-2. For async FIFO, independently reset each clock domain
-3. Monitor full/empty flags before read/write operations
-4. Test with realistic clock frequency relationships
-5. Verify CDC timing with simulation (minimum 500ns for validation)
+- Multi-clock interfaces
+- Throughput decoupling between producer and consumer domains
+- Robust CDC boundary crossing
 
----
+### Best Practices
+
+1. Assert/reset domains cleanly at startup
+2. Gate writes with `!full` and reads with `!empty`
+3. Verify behavior with realistic clock ratios
+4. Include stress tests with concurrent activity and reset events
 
 ## Simulation
 
-### Sync FIFO Test (tb_sync_fifo.sv)
-- Basic write/read operations
-- FIFO fill/empty tests
-- Simultaneous read/write stress test
-- Edge case handling
+### Sync Testbench (`sim/tb_sync_fifo.sv`)
 
-### Async FIFO Test (tb_async_fifo.sv)
-- Cross-domain write/read with different clock frequencies
+- Basic and stress read/write sequences
+- Boundary checks (full and empty)
+- Protocol-violation warning checks
+
+### Async Testbench (`sim/tb_async_fifo.sv`)
+
+- Dual-clock stress sequences
 - CDC synchronization verification
-- Stress test with multiple simultaneous operations
-- Metastability resilience validation
-- Real-time monitoring for protocol violations
-
+- Boundary and metastability-oriented scenarios

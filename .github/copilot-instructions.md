@@ -12,11 +12,11 @@ Where to look first
 
 Build & test (most useful commands)
 - Simulation (full):
-  - `vlib work && vmap work ./work && vlog src/*.sv sim/*.sv && vsim -c -do "run; quit" <testbench_module>`
+  - `cd sim && ./run_regression.ps1`
 - Compile only: `vlog src/*.sv sim/*.sv`
 - Interactive simulation: `vsim <testbench_module>`
 - Waveform viewing: `vsim -view results.wdb`
-- Single test (non-GUI): `vsim -c -do "run; quit" <testbench_module_name>`
+- Single test (non-GUI): `vsim -c <testbench_module_name> -do "run -all; exit"`
 
 High-level architecture
 - Synchronous FIFO: single clock domain, binary pointers, full/empty logic

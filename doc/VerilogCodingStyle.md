@@ -1,3 +1,5 @@
+<!-- markdownlint-disable -->
+
 # lowRISC Verilog Coding Style Guide
 
 ## Basics

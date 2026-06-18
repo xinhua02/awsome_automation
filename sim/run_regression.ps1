@@ -6,7 +6,7 @@ returns non-zero exit code if any simulation reports non-zero compile/runtime er
 
 param()
 
-function Run-Sim {
+function Test-Simulation {
     param(
         [string]$name,
         [string]$tbFile,
@@ -102,8 +102,8 @@ function Run-Sim {
 }
 
 $results = @()
-$results += Run-Sim -name 'sync' -tbFile 'tb_sync_fifo.sv' -tbTop 'tb_sync_fifo' -logfile 'sync_run.log'
-$results += Run-Sim -name 'async' -tbFile 'tb_async_fifo.sv' -tbTop 'tb_async_fifo' -logfile 'async_run.log'
+$results += Test-Simulation -name 'sync' -tbFile 'tb_sync_fifo.sv' -tbTop 'tb_sync_fifo' -logfile 'sync_run.log'
+$results += Test-Simulation -name 'async' -tbFile 'tb_async_fifo.sv' -tbTop 'tb_async_fifo' -logfile 'async_run.log'
 
 # Summary
 Write-Host "`n=== Regression Summary ==="
