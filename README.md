@@ -124,6 +124,30 @@ Write Domain              Read Domain
    ./regression_runner.ps1
    ```
 
+   This command now also generates code coverage artifacts under `sim/coverage/`:
+   - `coverage_merged.ucdb`
+   - `coverage_summary.txt`
+   - `coverage_details.txt`
+   - `coverage_analysis.md`
+
+   Optional: disable coverage collection for faster debugging runs:
+
+   ```powershell
+   ./regression_runner.ps1 -NoCoverage
+   ```
+
+   Legacy option: enforce a minimum total coverage gate (includes TB metrics):
+
+   ```powershell
+   ./regression_runner.ps1 -CoverageThreshold 75
+   ```
+
+   Recommended: enforce DUT-only full coverage gate (ignores TB metrics, target all DUT metric points):
+
+   ```powershell
+   ./regression_runner.ps1 -DutCoverageThreshold 100
+   ```
+
 4. **Interactive waveform viewing:**
 
    ```bash
@@ -297,6 +321,16 @@ vsim -do sim/run_async_fifo.do
 cd sim
 ./regression_runner.ps1
 ```
+
+Coverage artifacts are written to `sim/coverage/` on successful runs.
+
+If you prefer `cmd`/batch workflow, run:
+
+```bat
+run_regression.bat
+```
+
+`run_regression.bat` applies a default DUT-only coverage gate of `-DutCoverageThreshold 100` unless you explicitly pass `-DutCoverageThreshold`, `-CoverageThreshold`, or `-NoCoverage`.
 
 ---
 

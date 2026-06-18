@@ -95,6 +95,50 @@ vsim -c tb_async_fifo -do "run -all; exit"
 - `sim/sync_results_full.txt`: `errors=0 warnings=2`
 - `sim/async_results_full.txt`: `errors=0 warnings=4`
 
+## Code Coverage Report and Analysis (2026-06-18)
+
+The regression flow now generates merged code coverage artifacts automatically:
+
+- `sim/coverage/coverage_merged.ucdb`
+- `sim/coverage/coverage_summary.txt`
+- `sim/coverage/coverage_details.txt`
+- `sim/coverage/coverage_analysis.md`
+
+Latest coverage analysis summary:
+
+- Total coverage by instance: `83.39%`
+- Average metric coverage (instance mean): `93.21%`
+- Statements: `98.84%`
+- Branches: `91.17%`
+- Conditions: `91.67%`
+- Expressions: `100.00%`
+- Toggles: `84.36%`
+- DUT-only metric mean: `100.00%`
+- DUT minimum metric point: `100.00%`
+
+Primary low-coverage areas are testbench-side condition and toggle metrics:
+
+- `/tb_async_fifo` toggles: `20.83%`
+- `/tb_sync_fifo` toggles: `22.76%`
+- `/tb_async_fifo` branches: `69.23%`
+- `/tb_async_fifo` conditions: `75.00%`
+- `/tb_sync_fifo` branches: `77.77%`
+
+Interpretation:
+
+1. DUT instances (`sync_fifo`, `async_fifo`, CDC and Gray helper modules) reached full metric coverage in this run.
+2. Non-functional diagnostic checks in testbenches (warning-only guards and file-open failure branches) are now excluded from coverage scoring to avoid skewing functional metrics.
+3. Remaining gaps are mostly bench-only toggle activity and several async testbench branch paths.
+4. Future coverage closure should prioritize directed async branch scenarios and pruning/justifying non-functional bench toggles.
+
+DUT closure command (TB coverage ignored for gate decision):
+
+```powershell
+./regression_runner.ps1 -DutCoverageThreshold 100
+```
+
+Latest DUT gate status: PASS (`100.00% >= 100.00%`).
+
 ## Residual Risk Notes
 
 1. Warning counts are expected because benches intentionally inject protocol-violation attempts.
