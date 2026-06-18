@@ -121,8 +121,10 @@ Write Domain              Read Domain
 3. **Run full regression (recommended):**
 
    ```powershell
-   ./regression_runner.ps1
+   ./regression_runner.ps1 -DutCoverageThreshold 100
    ```
+
+   This is the recommended sign-off command because it gates on DUT coverage only and ignores TB-only noise in pass/fail decision.
 
    This command now also generates code coverage artifacts under `sim/coverage/`:
    - `coverage_merged.ucdb`
@@ -319,10 +321,17 @@ vsim -do sim/run_async_fifo.do
 
 ```powershell
 cd sim
-./regression_runner.ps1
+./regression_runner.ps1 -DutCoverageThreshold 100
 ```
 
 Coverage artifacts are written to `sim/coverage/` on successful runs.
+
+### Latest Coverage Snapshot (2026-06-18)
+
+- DUT coverage gate: PASS (`100.00% >= 100.00%`)
+- DUT-only metric mean: `100.00%`
+- DUT minimum metric point: `100.00%`
+- Total coverage by instance (includes TB): `83.39%`
 
 If you prefer `cmd`/batch workflow, run:
 
