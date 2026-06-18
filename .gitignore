@@ -1,0 +1,25 @@
+# Simulation logs and results
+sim/*.log
+sim/*.wdb
+sim/*.do
+sim/async_results_*
+
+# ModelSim config
+modelsim.ini
+sim/modelsim.ini
+
+# ModelSim/Questa work directories
+sim/work/
+sim/work/**
+work/
+work/**
+
+# Temporary and tool-generated files
+*.log
+*.wlf
+*.jou
+*.key
+
+# Editor/IDE
+.vscode/
+__pycache__/

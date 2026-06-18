@@ -19,6 +19,8 @@ module tb_async_fifo;
     logic [WIDTH-1:0] rd_data;
     logic rd_en;
     logic empty;
+    // Expected data queue for verification
+    logic [WIDTH-1:0] expected_q[$];
     
     // Instantiate async FIFO
     async_fifo #(.DEPTH(DEPTH), .WIDTH(WIDTH)) dut (
@@ -69,6 +71,7 @@ module tb_async_fifo;
                     if (!full) begin
                         wr_data = $urandom_range(0,255);
                         wr_en = 1;
+                        expected_q.push_back(wr_data);
                     end else begin
                         // Attempt write when full
                         wr_en = 1;
@@ -82,8 +85,17 @@ module tb_async_fifo;
                 repeat (10) @(posedge rd_clk);
                 repeat (512) begin
                     @(posedge rd_clk);
-                    if (!empty) begin rd_en = 1; end else rd_en = 0;
-                    @(posedge rd_clk); rd_en = 0;
+                    logic [WIDTH-1:0] expected_val;
+                    @(posedge rd_clk);
+                    if (!empty) begin
+                        rd_en = 1;
+                        expected_val = expected_q.pop_front();
+                    end else rd_en = 0;
+                    @(posedge rd_clk);
+                    if (rd_en) begin
+                        if (rd_data !== expected_val) $error("async_fifo: Data mismatch at %0t - expected %0h got %0h", $time, expected_val, rd_data);
+                    end
+                    rd_en = 0;
                     repeat ($urandom_range(0,3)) @(posedge rd_clk);
                 end
             end

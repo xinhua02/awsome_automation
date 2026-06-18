@@ -22,6 +22,8 @@ module tb_sync_fifo;
     
     // Status
     logic [DEPTH-1:0] count;
+    // Expected data queue for verification
+    logic [WIDTH-1:0] expected_q[$];
     
     // Instantiate sync FIFO
     sync_fifo #(.DEPTH(DEPTH), .WIDTH(WIDTH)) dut (
@@ -60,6 +62,7 @@ module tb_sync_fifo;
                     if (!full) begin
                         wr_data = $urandom_range(0,255);
                         wr_en = 1;
+                        expected_q.push_back(wr_data);
                     end else begin
                         // attempt write when full (error case check)
                         wr_en = 1;
@@ -75,12 +78,17 @@ module tb_sync_fifo;
                 repeat (5) @(posedge clk);
                 repeat (256) begin
                     @(posedge clk);
+                    logic [WIDTH-1:0] expected_val;
                     if (!empty) begin
                         rd_en = 1;
+                        expected_val = expected_q.pop_front();
                     end else begin
                         rd_en = 0;
                     end
                     @(posedge clk);
+                    if (rd_en) begin
+                        if (rd_data !== expected_val) $error("sync_fifo: Data mismatch at %0t - expected %0h got %0h", $time, expected_val, rd_data);
+                    end
                     rd_en = 0;
                     // random idle cycles
                     repeat ($urandom_range(0,4)) @(posedge clk);
@@ -141,6 +149,15 @@ module tb_sync_fifo;
         #20;
         $display("Testbench finished.");
         $finish;
+    end
+
+    // Monitor: verify DUT-reported count matches expected queue size
+    initial begin
+        forever @(posedge clk) begin
+            if (count !== expected_q.size()) begin
+                $error("sync_fifo: Count mismatch at %0t: count=%0d expected=%0d", $time, count, expected_q.size());
+            end
+        end
     end
 
 endmodule
