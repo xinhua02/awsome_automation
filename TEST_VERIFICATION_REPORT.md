@@ -60,7 +60,7 @@ This report documents a fresh code review and full simulation rerun on 2026-06-1
 From `sim/`:
 
 ```powershell
-./regression_runner.ps1
+./regression_runner.ps1 -DutCoverageThreshold 100
 ```
 
 Manual equivalents:
@@ -106,15 +106,18 @@ The regression flow now generates merged code coverage artifacts automatically:
 
 Latest coverage analysis summary:
 
-- Total coverage by instance: `83.39%`
-- Average metric coverage (instance mean): `93.21%`
-- Statements: `98.84%`
-- Branches: `91.17%`
-- Conditions: `91.67%`
-- Expressions: `100.00%`
-- Toggles: `84.36%`
+- DUT coverage quality: `Good`
+- Total coverage by instance (includes TB): `83.39%`
 - DUT-only metric mean: `100.00%`
 - DUT minimum metric point: `100.00%`
+
+DUT metric summary (all `100.00%`):
+
+- Statements: `100.00%`
+- Branches: `100.00%`
+- Conditions: `100.00%`
+- Expressions: `100.00%`
+- Toggles: `100.00%`
 
 Primary low-coverage areas are testbench-side condition and toggle metrics:
 
