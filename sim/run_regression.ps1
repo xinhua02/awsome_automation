@@ -43,8 +43,8 @@ function Run-Sim {
 }
 
 $results = @()
-$results += Run-Sim -name 'sync' -vsrc '../src/sync_fifo.v' -tb 'tb_sync_fifo' -logfile 'sync_run.log'
-$results += Run-Sim -name 'async' -vsrc '../src/async_fifo.v' -tb 'tb_async_fifo' -logfile 'async_run.log'
+$results += Run-Sim -name 'sync' -vsrc '../src/sync_fifo.sv' -tb 'tb_sync_fifo' -logfile 'sync_run.log'
+$results += Run-Sim -name 'async' -vsrc '../src/async_fifo.sv' -tb 'tb_async_fifo' -logfile 'async_run.log'
 
 # Summary
 Write-Host "`n=== Regression Summary ==="

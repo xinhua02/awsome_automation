@@ -249,13 +249,13 @@ C:\questasim64_2021.1\win64\questasim.exe -batch -do "run_async_fifo.do"
 # Sync FIFO
 vlib work
 vmap work work
-vlog -sv +incdir=../src ../src/sync_fifo.v tb_sync_fifo.sv
+vlog -sv +incdir=../src ../src/sync_fifo.sv tb_sync_fifo.sv
 vsim -c tb_sync_fifo -do "run -all; exit"
 
 # Async FIFO
 vlib work
 vmap work work
-vlog -sv +incdir=../src ../src/async_fifo.v tb_async_fifo.sv
+vlog -sv +incdir=../src ../src/async_fifo.sv tb_async_fifo.sv
 vsim -c tb_async_fifo -do "run -all; exit"
 ```
 

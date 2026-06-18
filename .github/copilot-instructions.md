@@ -7,13 +7,13 @@ What was found
 - **Project Type**: Hardware verification (Synchronous & Asynchronous FIFO designs)
 - **Language**: Verilog (SystemVerilog for testbenches)
 - **Structure**: 
-  - `src/` — Verilog modules (sync_fifo.v, async_fifo.v)
+  - `src/` — Verilog modules (sync_fifo.sv, async_fifo.sv)
   - `sim/` — Simulation testbenches and environment
   - `doc/` — Documentation and design notes
 
 Build, test, and lint commands
-- Simulation: `vlib work && vmap work ./work && vlog src/*.v sim/*.v && vsim -c -do "run; quit" <testbench_module>`
-- Compile only: `vlog src/*.v sim/*.v`
+- Simulation: `vlib work && vmap work ./work && vlog src/*.sv sim/*.sv && vsim -c -do "run; quit" <testbench_module>`
+- Compile only: `vlog src/*.sv sim/*.sv`
 - Interactive simulation: `vsim <testbench_module>` (opens GUI)
 - Waveform viewing: `vsim -view results.wdb` or use ModelSim waveform viewer
 - Single test: `vsim -c -do "run; quit" <testbench_module_name>`
