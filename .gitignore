@@ -2,7 +2,8 @@
 sim/*.log
 sim/*.wdb
 sim/*.do
-sim/async_results_*
+sim/*_tb_report.txt
+sim/*_results_full.txt
 
 # ModelSim config
 modelsim.ini
