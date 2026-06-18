@@ -1,0 +1,74 @@
+name: Verilog Lint
+
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'sim/**'
+      - '.github/workflows/**'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'sim/**'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y verilator git
+
+      - name: Run Verilator lint
+        run: |
+          set -e
+          SV_FILES=$(find src sim -name '*.sv' -print | tr '\n' ' ')
+          if [ -z "$SV_FILES" ]; then
+            echo "No .sv files found in src/ or sim/; skipping Verilator.";
+          else
+            echo "Running verilator --lint-only on: $SV_FILES"
+            verilator --lint-only --Wall $SV_FILES
+          fi
+
+      - name: Check for tabs
+        run: |
+          if git grep -nP "\t" -- 'src/**' 'sim/**' > /dev/null 2>&1; then
+            echo "Tabs found in source files. Please use spaces for indentation.";
+            git grep -nP "\t" -- 'src/**' 'sim/**'
+            exit 1
+          else
+            echo "No tabs found."
+          fi
+
+      - name: Check for trailing whitespace
+        run: |
+          if git grep -nP "[ \t]+$" -- 'src/**' 'sim/**' > /dev/null 2>&1; then
+            echo "Trailing whitespace found.";
+            git grep -nP "[ \t]+$" -- 'src/**' 'sim/**'
+            exit 1
+          else
+            echo "No trailing whitespace."
+          fi
+
+      - name: Ensure single module per file
+        run: |
+          set -e
+          failed=0
+          for f in $(find src sim -name '*.sv'); do
+            count=$(grep -nE "^\s*module\b" "$f" | wc -l)
+            if [ "$count" -gt 1 ]; then
+              echo "$f has $count module declarations (should be 1)."
+              grep -nE "^\s*module\b" "$f"
+              failed=1
+            fi
+          done
+          if [ "$failed" -eq 1 ]; then
+            echo "One or more files contain multiple module declarations.";
+            exit 1
+          else
+            echo "All .sv files contain a single module.";
+          fi
