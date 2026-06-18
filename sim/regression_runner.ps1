@@ -6,50 +6,54 @@ returns non-zero exit code if any simulation reports non-zero compile/runtime er
 
 param()
 
-function Test-Simulation {
-    param(
-        [string]$name,
-        [string]$tbFile,
-        [string]$tbTop,
-        [string]$logfile
-    )
+$results = @()
+
+$testCases = @(
+    @{ name = 'sync'; tbFile = 'tb_sync_fifo.sv'; tbTop = 'tb_sync_fifo'; logfile = 'sync_run.log' },
+    @{ name = 'async'; tbFile = 'tb_async_fifo.sv'; tbTop = 'tb_async_fifo'; logfile = 'async_run.log' }
+)
+
+foreach ($testCase in $testCases) {
+    $name = $testCase.name
+    $tbFile = $testCase.tbFile
+    $tbTop = $testCase.tbTop
+    $logfile = $testCase.logfile
 
     Write-Host "=== Running $name simulation => $logfile ==="
     Remove-Item -Path $logfile -ErrorAction SilentlyContinue
 
-    # Start fresh for each simulation to avoid stale compiled units masking failures.
     if (Test-Path -Path 'work') {
         Remove-Item -Path 'work' -Recurse -Force
     }
 
-    # Ensure library
     & vlib work 2>&1 | Tee-Object -FilePath $logfile -Append | Out-Null
     if ($LASTEXITCODE -ne 0) {
         Write-Host "$($name): FAIL (vlib failed) - see $logfile"
-        return @{ name=$name; pass=$false; errors=1; logfile=$logfile }
+        $results += @{ name = $name; pass = $false; errors = 1; logfile = $logfile }
+        continue
     }
 
     & vmap work ./work 2>&1 | Tee-Object -FilePath $logfile -Append | Out-Null
     if ($LASTEXITCODE -ne 0) {
         Write-Host "$($name): FAIL (vmap failed) - see $logfile"
-        return @{ name=$name; pass=$false; errors=1; logfile=$logfile }
+        $results += @{ name = $name; pass = $false; errors = 1; logfile = $logfile }
+        continue
     }
 
-    # Compile all RTL files and selected testbench with assertions.
     & vlog -sv +incdir=../src ../src/*.sv fifo_assertions.sv $tbFile 2>&1 | Tee-Object -FilePath $logfile -Append | Out-Null
     if ($LASTEXITCODE -ne 0) {
         Write-Host "$($name): FAIL (vlog failed) - see $logfile"
-        return @{ name=$name; pass=$false; errors=1; logfile=$logfile }
+        $results += @{ name = $name; pass = $false; errors = 1; logfile = $logfile }
+        continue
     }
 
-    # Run simulation (command-line). Capture output in logfile.
     & vsim -c $tbTop -do "run -all; exit" 2>&1 | Tee-Object -FilePath $logfile -Append | Out-Null
     if ($LASTEXITCODE -ne 0) {
         Write-Host "$($name): FAIL (vsim failed) - see $logfile"
-        return @{ name=$name; pass=$false; errors=1; logfile=$logfile }
+        $results += @{ name = $name; pass = $false; errors = 1; logfile = $logfile }
+        continue
     }
 
-    # Inspect logfile for real simulation errors.
     $content = Get-Content -Raw -Path $logfile
     $errs = 0
     $errorLines = [regex]::Matches($content, '\*\* Error:').Count
@@ -65,7 +69,6 @@ function Test-Simulation {
         }
     }
 
-    # Compare testbench-generated report with baseline expected results
     $reportFile = "${name}_tb_report.txt"
     $baselineFile = "${name}_results_full.txt"
     if (Test-Path -Path $reportFile) {
@@ -76,9 +79,9 @@ function Test-Simulation {
                 $errs += $tbErrs
             }
         }
+
         $baselineMissingOrEmpty = (-not (Test-Path -Path $baselineFile)) -or ((Get-Item $baselineFile).Length -eq 0)
         if ($baselineMissingOrEmpty) {
-            # If baseline is missing/empty, create it from this run to establish expected output.
             Set-Content -Path $baselineFile -Value $report
             Write-Host "Baseline created: $baselineFile"
         } else {
@@ -94,26 +97,22 @@ function Test-Simulation {
 
     if ($errs -eq 0) {
         Write-Host "$($name): PASS (Errors: 0)"
-        return @{ name=$name; pass=$true; errors=0; logfile=$logfile }
+        $results += @{ name = $name; pass = $true; errors = 0; logfile = $logfile }
     } else {
         Write-Host "$($name): FAIL (Errors: $errs) - see $logfile"
-        return @{ name=$name; pass=$false; errors=$errs; logfile=$logfile }
+        $results += @{ name = $name; pass = $false; errors = $errs; logfile = $logfile }
     }
 }
 
-$results = @()
-$results += Test-Simulation -name 'sync' -tbFile 'tb_sync_fifo.sv' -tbTop 'tb_sync_fifo' -logfile 'sync_run.log'
-$results += Test-Simulation -name 'async' -tbFile 'tb_async_fifo.sv' -tbTop 'tb_async_fifo' -logfile 'async_run.log'
-
-# Summary
 Write-Host "`n=== Regression Summary ==="
 $failed = $results | Where-Object { -not $_.pass }
 if ($failed.Count -eq 0) {
     Write-Host "All simulations passed."
     exit 0
-} else {
-    foreach ($f in $failed) {
-        Write-Host "FAILED: $($f.name) (errors=$($f.errors)) -> $($f.logfile)"
-    }
-    exit 1
 }
+
+foreach ($f in $failed) {
+    Write-Host "FAILED: $($f.name) (errors=$($f.errors)) -> $($f.logfile)"
+}
+
+exit 1

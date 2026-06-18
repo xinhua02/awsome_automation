@@ -16,7 +16,7 @@ This report documents a fresh code review and full simulation rerun on 2026-06-1
 1. Regression script could report false PASS.
    - Root cause: testbench top names were passed where source files were expected.
    - Impact: stale compiled units could hide compile/runtime failures.
-   - Fix: `sim/run_regression.ps1` now compiles the actual `tb_*.sv` files, checks each tool exit code, and recreates `work` per test.
+   - Fix: `sim/regression_runner.ps1` now compiles the actual `tb_*.sv` files, checks each tool exit code, and recreates `work` per test.
 
 2. Testbench syntax errors in both sync and async benches.
    - Root cause: block-local declarations appeared after statements (illegal in this context/tool setup).
@@ -36,7 +36,7 @@ This report documents a fresh code review and full simulation rerun on 2026-06-1
    - Fix: use a stable model queue monitor for data/count/flag consistency.
 
 3. Baseline comparison robustness.
-   - Fix: `sim/run_regression.ps1` compares trimmed report text and auto-initializes missing/empty baselines.
+   - Fix: `sim/regression_runner.ps1` compares trimmed report text and auto-initializes missing/empty baselines.
 
 ## Test Scope
 
@@ -60,7 +60,7 @@ This report documents a fresh code review and full simulation rerun on 2026-06-1
 From `sim/`:
 
 ```powershell
-./run_regression.ps1
+./regression_runner.ps1
 ```
 
 Manual equivalents:

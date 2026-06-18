@@ -12,7 +12,7 @@ Where to look first
 
 Build & test (most useful commands)
 - Simulation (full):
-  - `cd sim && ./run_regression.ps1`
+  - `cd sim && ./regression_runner.ps1`
 - Compile only: `vlog src/*.sv sim/*.sv`
 - Interactive simulation: `vsim <testbench_module>`
 - Waveform viewing: `vsim -view results.wdb`

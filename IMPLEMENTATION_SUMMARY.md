@@ -8,7 +8,7 @@ This repository contains complete synchronous and asynchronous FIFO implementati
 
 - Implementation: complete
 - Regression: passing (sync + async)
-- Primary regression entrypoint: `sim/run_regression.ps1`
+- Primary regression entrypoint: `sim/regression_runner.ps1`
 
 ## Deliverables
 
@@ -102,7 +102,7 @@ sim/
    tb_async_fifo.sv
    run_sync_fifo.do
    run_async_fifo.do
-   run_regression.ps1
+   regression_runner.ps1
 ```
 
 ## Verified Commands
@@ -110,7 +110,7 @@ sim/
 From `sim/`:
 
 ```powershell
-./run_regression.ps1
+./regression_runner.ps1
 ```
 
 Manual runs:

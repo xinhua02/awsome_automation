@@ -28,7 +28,7 @@ awsome_automation/
 │   ├── tb_async_fifo.sv    # Asynchronous FIFO testbench
 │   ├── run_sync_fifo.do    # QuestaSim script (sync)
 │   ├── run_async_fifo.do   # QuestaSim script (async)
-│   └── run_regression.ps1  # One-command regression runner
+│   └── regression_runner.ps1  # One-command regression runner
 ├── doc/
 │   └── FIFO_DESIGN.md      # Detailed technical documentation
 ├── IMPLEMENTATION_SUMMARY.md
@@ -121,7 +121,7 @@ Write Domain              Read Domain
 3. **Run full regression (recommended):**
 
    ```powershell
-   ./run_regression.ps1
+   ./regression_runner.ps1
    ```
 
 4. **Interactive waveform viewing:**
@@ -295,7 +295,7 @@ vsim -do sim/run_async_fifo.do
 
 ```powershell
 cd sim
-./run_regression.ps1
+./regression_runner.ps1
 ```
 
 ---
