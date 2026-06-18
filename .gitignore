@@ -4,6 +4,8 @@ sim/*.wdb
 sim/*.do
 sim/*_tb_report.txt
 sim/*_results_full.txt
+sim/coverage/
+sim/*.ucdb
 
 # ModelSim config
 modelsim.ini
