@@ -19,7 +19,7 @@ module sync_fifo #(
   output logic                empty,
 
   // Status
-  output logic [DEPTH-1:0]    count
+  output logic [$clog2(DEPTH):0] count
 );
 
   // Calculate address width
@@ -45,7 +45,7 @@ module sync_fifo #(
   
   // Calculate count
   assign fifo_count = wr_ptr - rd_ptr;
-  assign count = fifo_count[ADDR_WIDTH-1:0];
+  assign count = fifo_count;
   
   // Read data
   assign rd_data = mem[rd_addr];

@@ -23,6 +23,7 @@ module tb_async_fifo;
     logic empty;
     // Expected data queue for verification
     logic [WIDTH-1:0] expected_q[$];
+    integer fh;
     
     // Instantiate async FIFO
     async_fifo #(.DEPTH(DEPTH), .WIDTH(WIDTH)) dut (
@@ -83,11 +84,11 @@ module tb_async_fifo;
                 end
             end
             begin : rd_proc
+                logic [WIDTH-1:0] expected_val;
                 // small startup delay
                 repeat (10) @(posedge rd_clk);
                 repeat (512) begin
                     @(posedge rd_clk);
-                    logic [WIDTH-1:0] expected_val;
                     @(posedge rd_clk);
                     if (!empty) begin
                         rd_en = 1;
@@ -173,8 +174,7 @@ module tb_async_fifo;
         $display("=== All Async FIFO Cases Complete ===");
         #100;
         // Write compact report for post-sim comparison
-        integer fh;
-        fh = $fopen("c:/Users/xinhua02/awsome_automation/awsome_automation/sim/async_tb_report.txt", "w");
+        fh = $fopen("async_tb_report.txt", "w");
         if (fh == 0) begin
             $display("async_fifo: FOPEN FAILED for async_tb_report.txt (fh=%0d)", fh);
         end else begin
