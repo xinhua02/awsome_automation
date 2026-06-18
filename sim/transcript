@@ -1,0 +1,230 @@
+# vsim -c tb_async_fifo -do "run -all; exit" 
+# Start time: 11:25:22 on Jun 18,2026
+# ** Note: (vsim-8009) Loading existing optimized design _opt1
+# //  Questa Sim-64
+# //  Version 2021.1 win64 Jan 19 2021
+# //
+# //  Copyright 1991-2021 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.tb_async_fifo(fast)
+# run -all
+# === CASE 1: Concurrent Read/Write Stress (async) ===
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 12565 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 12605 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 12645 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 12685 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 12705 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 12735 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 12775 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 12815 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 12855 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 12885 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 12905 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 12945 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 12975 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 12995 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13035 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13075 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13105 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13125 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13165 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13185 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13215 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13245 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13285 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13315 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13335 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13355 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13375 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13405 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13445 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13475 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13515 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13555 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13595 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13635 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13675 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13705 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13735 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13765 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13805 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13825 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13855 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13895 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13925 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13955 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 13985 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14015 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14045 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14065 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14095 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14135 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14155 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14185 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14215 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14235 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14275 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14305 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14335 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14355 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14385 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14415 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14445 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14485 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14505 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14525 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14555 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14595 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14635 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14665 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14705 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14745 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14765 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14795 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14835 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14875 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14915 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14945 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14975 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 14995 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15025 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15065 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15085 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15115 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15145 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15175 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15195 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15235 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15255 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15275 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15295 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15315 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15335 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15355 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15375 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15415 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 15435 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# === CASE 2: Random Interval Operations ===
+# === CASE 3: Boundary - Fill to Full and Write-when-Full ===
+# ** Warning: Write attempted while FIFO is full!
+#    Time: 17615 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 162
+# ** Warning: Async: write attempted while FIFO full (expected)
+#    Time: 17615 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 118
+# === CASE 4: Boundary - Drain to Empty and Read-when-Empty ===
+# ** Warning: Read attempted while FIFO is empty!
+#    Time: 17845470 ps  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 171
+# ** Warning: Async: read attempted while FIFO empty (expected)
+#    Time: 17845470 ps  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 131
+# === CASE 5: Metastability Injection ===
+# Injected async rd reset at time 17968000
+# Injected async rd reset at time 18688000
+# === All Async FIFO Cases Complete ===
+# ** Note: $finish    : tb_async_fifo.sv(154)
+#    Time: 19145 ns  Iteration: 0  Instance: /tb_async_fifo
+# End time: 11:25:27 on Jun 18,2026, Elapsed time: 0:00:05
+# Errors: 0, Warnings: 99
