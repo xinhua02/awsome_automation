@@ -1,5 +1,5 @@
-# vsim -c tb_async_fifo -do "run -all; exit" 
-# Start time: 13:07:07 on Jun 18,2026
+# vsim -coverage -c -onfinish stop tb_async_fifo -do "coverage save -onexit coverage/async.ucdb; run -all; exit" 
+# Start time: 15:06:03 on Jun 18,2026
 # ** Note: (vsim-3812) Design is being optimized...
 # //  Questa Sim-64
 # //  Version 2021.1 win64 Jan 19 2021
@@ -17,25 +17,35 @@
 # //
 # Loading sv_std.std
 # Loading work.tb_async_fifo(fast)
-# run -all
+# coverage save -onexit coverage/async.ucdb
+#  run -all
 # === CASE 1: Concurrent Read/Write Stress (async) ===
 # === CASE 2: Random Interval Operations ===
 # === CASE 3: Boundary - Fill to Full and Write-when-Full ===
 # ** Warning: Write attempted while FIFO is full!
-#    Time: 17715 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 192
+#    Time: 17195 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 200
 # ** Warning: Async: write attempted while FIFO full (expected)
-#    Time: 17715 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 137
+#    Time: 17195 ns  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 139
 # === CASE 4: Boundary - Drain to Empty and Read-when-Empty ===
 # ** Warning: Read attempted while FIFO is empty!
-#    Time: 17945370 ps  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 199
+#    Time: 17425890 ps  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 209
 # ** Warning: Async: read attempted while FIFO empty (expected)
-#    Time: 17945370 ps  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 152
+#    Time: 17425890 ps  Scope: tb_async_fifo File: tb_async_fifo.sv Line: 156
 # === CASE 5: Metastability Injection ===
-# Injected async rd reset at time 18708000
-# Injected async rd reset at time 18928000
+# Injected async rd reset at time 17448000
+# Injected async rd reset at time 17768000
+# Injected async rd reset at time 17788000
+# Injected async rd reset at time 18128000
+# Injected async rd reset at time 18268000
+# Injected async rd reset at time 18308000
+# Injected async rd reset at time 18428000
 # === All Async FIFO Cases Complete ===
 # Async testbench finished. Report written to sim/async_tb_report.txt (fh=-2147483645)
-# ** Note: $finish    : tb_async_fifo.sv(185)
-#    Time: 19245 ns  Iteration: 0  Instance: /tb_async_fifo
-# End time: 13:07:13 on Jun 18,2026, Elapsed time: 0:00:06
+# ** Note: $finish    : tb_async_fifo.sv(192)
+#    Time: 18728 ns  Iteration: 0  Instance: /tb_async_fifo
+# Break in Module tb_async_fifo at tb_async_fifo.sv line 192
+# Stopped at tb_async_fifo.sv line 192
+#  exit
+# Saving coverage database on exit...
+# End time: 15:06:13 on Jun 18,2026, Elapsed time: 0:00:10
 # Errors: 0, Warnings: 4
